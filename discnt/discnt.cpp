@@ -7,8 +7,8 @@ void substructDiscount(long long* products, double* priceWithoutDiscount, int pr
 {
     int max_element_pos;
     int elementsWithDiscount = (productCount / 3); // we need discount only for third part
-    int tmp;
 
+    // use selection sort
     for (int i = 0; i < elementsWithDiscount; i++)
     {
         max_element_pos = i;
@@ -23,10 +23,10 @@ void substructDiscount(long long* products, double* priceWithoutDiscount, int pr
         // substructure discount
         *priceWithoutDiscount -= (double) products[max_element_pos] * discountPercent;
         
-        // in our case no reason to do swap and waste resources
-        tmp = products[max_element_pos];
-        products[max_element_pos] = products[i];
-        products[i] = tmp;
+        // let's do swap :)
+        products[max_element_pos] ^= products[i];
+        products[i] ^= products[max_element_pos];
+        products[max_element_pos] ^= products[i];
     }
 
     return;
