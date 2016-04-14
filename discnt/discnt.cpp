@@ -80,9 +80,10 @@ int main(int ac, char** av)
         outputFileName = "discnt.out";
     }
 
-    long long *inputData = (long long*) malloc(sizeof(long long)*10001); // the last element contains discount percent
+    long long *inputData = (long long*) malloc(sizeof(long long) * 10001); // the last element contains discount percent
     int productCount = 0;
     double priceWithoutDiscount = 0;
+    int complexity = 0;
 
     // read input data into array
     FILE *inputFile = fopen(inputFileName, "r");
@@ -91,12 +92,13 @@ int main(int ac, char** av)
         while(fscanf(inputFile, "%lld ", inputData + productCount) > 0) // parse %d followed by ','
         {
             priceWithoutDiscount += inputData[productCount];
+            complexity ^= inputData[productCount] ^ productCount;
             productCount++;
         }
         //
         productCount--;
 
-        // int array the last element is discount percent
+        // in the array the last element is discount percent
         priceWithoutDiscount -= inputData[productCount];
 
         fclose(inputFile);
@@ -104,9 +106,13 @@ int main(int ac, char** av)
     }
 
     // substructure discount size
-    if(inputData[productCount] != 0) // no reason to do calculation if discount == 0 %
-        substructDiscountByInsertion(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
-
+    if (inputData[productCount] != 0) // no reason to do calculation if discount == 0 %
+    {
+        if(complexity > productCount * 2)
+            substructDiscountBySelection(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
+        else
+            substructDiscountByInsertion(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
+    }
     // write result into file
     FILE *outputFile = fopen(outputFileName, "w");
     if(outputFile)
