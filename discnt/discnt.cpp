@@ -108,7 +108,7 @@ int main(int ac, char** av)
     // substructure discount size
     if (inputData[productCount] != 0) // no reason to do calculation if discount == 0 %
     {
-        if(complexity > productCount * 2)
+        if(complexity > productCount * 2) // TODO : adjust this value
             substructDiscountBySelection(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
         else
             substructDiscountByInsertion(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
