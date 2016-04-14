@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <math.h>
 
-// use selection sort
-void substructDiscount(long long* products, double* priceWithoutDiscount, int productCount, double discountPercent)
+// use selection sort that effective because we can sort only productCount / 3 elements
+void substructDiscountBySelection(long long* products, double* priceWithoutDiscount, int productCount, double discountPercent)
 {
     int max_element_pos;
     int elementsWithDiscount = (productCount / 3); // we need discount only for third part
@@ -27,6 +27,35 @@ void substructDiscount(long long* products, double* priceWithoutDiscount, int pr
         products[max_element_pos] ^= products[i];
         products[i] ^= products[max_element_pos];
         products[max_element_pos] ^= products[i];
+    }
+
+    return;
+}
+
+// use insertion sort that effective when sequence is almost sorted
+void substructDiscountByInsertion(long long* products, double* priceWithoutDiscount, int productCount, double discountPercent)
+{
+    int current_pos;
+    for (int i = 0; i < productCount; i++)
+    {
+        current_pos = i;
+
+        while (current_pos > 0 && products[current_pos - 1] < products[current_pos])
+        {
+            // swap :)
+            products[current_pos] ^= products[current_pos - 1];
+            products[current_pos - 1] ^= products[current_pos];
+            products[current_pos] ^= products[current_pos - 1];
+
+            current_pos -= 1;
+        }
+    }
+
+    // substruct discount
+    int productWithDiscount = productCount / 3; // we don't want to do division each iteration
+    for (int i = 0; i < productWithDiscount; i++)
+    {
+        *priceWithoutDiscount -= products[i] * discountPercent;
     }
 
     return;
@@ -76,7 +105,7 @@ int main(int ac, char** av)
 
     // substructure discount size
     if(inputData[productCount] != 0) // no reason to do calculation if discount == 0 %
-        substructDiscount(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
+        substructDiscountByInsertion(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
 
     // write result into file
     FILE *outputFile = fopen(outputFileName, "w");
