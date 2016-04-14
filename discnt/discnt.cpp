@@ -76,7 +76,7 @@ int main(int ac, char** av)
 
     // substructure discount size
     if(inputData[productCount] != 0) // no reason to do calculation if discount == 0 %
-        substructDiscount(inputData, &priceWithoutDiscount, productCount - 1, inputData[productCount] / 100.0);
+        substructDiscount(inputData, &priceWithoutDiscount, productCount, inputData[productCount] / 100.0);
 
     // write result into file
     FILE *outputFile = fopen(outputFileName, "w");
