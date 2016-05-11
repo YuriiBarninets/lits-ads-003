@@ -74,7 +74,6 @@ int main(int ac, char** av)
         fclose(outputFile);
         outputFile = NULL;
     }
-    printf("%d", maxCount);
 
     return 0;
 }
