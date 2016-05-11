@@ -46,7 +46,7 @@ int main(int ac, char** av)
         fscanf(inputFile, "%u %u", dailyRate + i, avarice + i);
 
     int maxCount = 0;
-    int chosenHamsterCount = hamsterCount / 2;
+    int chosenHamsterCount = round(hamsterCount / 2.0);
     int first = 0;
     int last = hamsterCount;
 
@@ -60,7 +60,7 @@ int main(int ac, char** av)
         quickSort(maxHamsterUsage, hamsterCount);
 
         // sum hamsters which eat the least food
-        for (int z = 0; z < chosenHamsterCount && sumResult < dailyLimit; ++z)
+        for (int z = 0; z < chosenHamsterCount && sumResult <= dailyLimit; ++z)
             sumResult += maxHamsterUsage[z];
 
         if (sumResult <= dailyLimit)
