@@ -4,7 +4,7 @@
 #include <ctime>
 
 int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount);
-void quickSort(int* arr, long size);
+void quickSort(unsigned int* arr, long size);
 
 int main(int ac, char** av)
 {
@@ -27,18 +27,18 @@ int main(int ac, char** av)
 
     FILE *inputFile = fopen(inputFileName, "r");
     unsigned int dailyLimit, hamsterCount = 0;
-    int *dailyRate = NULL;
-    int *avarice = NULL;
-    int *maxHamsterUsage = NULL;
+    unsigned int *dailyRate = NULL;
+    unsigned int *avarice = NULL;
+    unsigned int *maxHamsterUsage = NULL;
 
     if (inputFile)
     {
         fscanf(inputFile, "%u", &dailyLimit);
         fscanf(inputFile, "%u", &hamsterCount);
 
-        dailyRate = (int*) malloc(sizeof(int) * hamsterCount);
-        avarice = (int*) malloc(sizeof(int) * hamsterCount);
-        maxHamsterUsage = (int*) malloc(sizeof(int) * hamsterCount);
+        dailyRate = (unsigned int*) malloc(sizeof(int) * hamsterCount);
+        avarice = (unsigned int*) malloc(sizeof(int) * hamsterCount);
+        maxHamsterUsage = (unsigned int*) malloc(sizeof(int) * hamsterCount);
     }
 
     // read food usage and avarice values
@@ -46,8 +46,6 @@ int main(int ac, char** av)
         fscanf(inputFile, "%u %u", dailyRate + i, avarice + i);
 
     int maxCount = 0;
-    //for (int chosenHamsterCount = 1; chosenHamsterCount <= hamsterCount; ++chosenHamsterCount)
-    //{
     int chosenHamsterCount = hamsterCount / 2;
     int first = 0;
     int last = hamsterCount;
@@ -58,26 +56,28 @@ int main(int ac, char** av)
         for (int j = 0; j < hamsterCount; ++j)
             maxHamsterUsage[j] = calculateMaxHamsterUsage(dailyRate[j], avarice[j], chosenHamsterCount - 1);
 
-        int sumResult = 0;
+        unsigned int sumResult = 0;
         quickSort(maxHamsterUsage, hamsterCount);
 
         // sum hamsters which eat the least food
-        for (int z = 0; z < chosenHamsterCount; ++z)
+        for (int z = 0; z < chosenHamsterCount && sumResult < dailyLimit; ++z)
             sumResult += maxHamsterUsage[z];
 
         if (sumResult <= dailyLimit)
         {
             maxCount = chosenHamsterCount;
+            if (chosenHamsterCount == hamsterCount) break;
+
             first = chosenHamsterCount;
-            chosenHamsterCount = (first + last) / 2;
+            chosenHamsterCount = round((first + last) / 2.0);
         }
         else
         {
+            if (last - first == 1) break;
             last = chosenHamsterCount;
-            chosenHamsterCount = (first + chosenHamsterCount) / 2;
+            chosenHamsterCount = round((first + last) / 2.0);
         }
-    } while (last - first > 1);
-    //}
+    } while (true);
 
     // save result to file
     FILE *outputFile = fopen(outputFileName, "w");
@@ -97,7 +97,7 @@ int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount)
     return dailyRate + hamsterCount * avarice;
 }
 
-void quickSort(int* arr, long size)
+void quickSort(unsigned int* arr, long size)
 {
   long i = 0, j = size-1;
   int temp, pivot;
