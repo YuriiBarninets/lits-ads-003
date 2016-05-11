@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <math.h>
+#include <ctime>
 
 int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount);
 void quickSort(int* arr, long size);
@@ -45,25 +46,38 @@ int main(int ac, char** av)
         fscanf(inputFile, "%u %u", dailyRate + i, avarice + i);
 
     int maxCount = 0;
-    for (int chosenHamsterCount = 1; chosenHamsterCount <= hamsterCount; ++chosenHamsterCount)
+    //for (int chosenHamsterCount = 1; chosenHamsterCount <= hamsterCount; ++chosenHamsterCount)
+    //{
+    int chosenHamsterCount = hamsterCount / 2;
+    int first = 0;
+    int last = hamsterCount;
+
+    do
     {
         // calcualte max food usage for each hamster
         for (int j = 0; j < hamsterCount; ++j)
             maxHamsterUsage[j] = calculateMaxHamsterUsage(dailyRate[j], avarice[j], chosenHamsterCount - 1);
-        
+
         int sumResult = 0;
         quickSort(maxHamsterUsage, hamsterCount);
-        
+
         // sum hamsters which eat the least food
-        for(int z = 0; z < chosenHamsterCount; ++z)
+        for (int z = 0; z < chosenHamsterCount; ++z)
             sumResult += maxHamsterUsage[z];
 
-        // break when sum more then dailyRate
-        if (sumResult <= dailyLimit && chosenHamsterCount <= hamsterCount)
+        if (sumResult <= dailyLimit)
+        {
             maxCount = chosenHamsterCount;
+            first = chosenHamsterCount;
+            chosenHamsterCount = (first + last) / 2;
+        }
         else
-            break;
-    }
+        {
+            last = chosenHamsterCount;
+            chosenHamsterCount = (first + chosenHamsterCount) / 2;
+        }
+    } while (last - first > 1);
+    //}
 
     // save result to file
     FILE *outputFile = fopen(outputFileName, "w");
