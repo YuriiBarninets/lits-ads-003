@@ -4,7 +4,11 @@
 #include <ctime>
 
 int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount);
-void quickSort(unsigned int* arr, long size);
+
+// quick select
+int getPivotIndex(int left, int right);
+int partition(unsigned int* arr, int left, int right);
+int quickSelect(unsigned int* arr, int kOrder, int left, int right);
 
 int main(int ac, char** av)
 {
@@ -57,11 +61,9 @@ int main(int ac, char** av)
             maxHamsterUsage[j] = calculateMaxHamsterUsage(dailyRate[j], avarice[j], chosenHamsterCount - 1);
 
         unsigned int sumResult = 0;
-        quickSort(maxHamsterUsage, hamsterCount);
-
         // sum hamsters which eat the least food
         for (int z = 0; z < chosenHamsterCount && sumResult <= dailyLimit; ++z)
-            sumResult += maxHamsterUsage[z];
+            sumResult += quickSelect(maxHamsterUsage, z, 0, hamsterCount);
 
         if (sumResult <= dailyLimit)
         {
@@ -84,7 +86,7 @@ int main(int ac, char** av)
     if(outputFile)
     {
         fprintf (outputFile, "%d", maxCount);
-        
+
         fclose(outputFile);
         outputFile = NULL;
     }
@@ -97,25 +99,66 @@ int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount)
     return dailyRate + hamsterCount * avarice;
 }
 
-void quickSort(unsigned int* arr, long size)
+int getPivotIndex(int left, int right)
 {
-  long i = 0, j = size-1;
-  int temp, pivot;
-
-  pivot = arr[ size>>1 ];
-
-  do {
-    while ( arr[i] < pivot ) i++;
-    while ( arr[j] > pivot ) j--;
-
-    if (i <= j) {
-      temp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = temp;
-      i++; j--;
-    }
-  } while ( i<=j );
-
-  if ( j > 0 ) quickSort(arr, j);
-  if ( size > i ) quickSort(arr+i, size-i);
+    return (left+right)/2;
 }
+
+int partition(unsigned int* arr, int left, int right)
+{
+    int pivotIndex = getPivotIndex(left, right);
+    int pivotValue = arr[pivotIndex];
+    int tmpLeft = left;
+    int tmpRight = right;
+
+
+    do
+    {
+        // looking for element in left part
+        while(arr[tmpLeft] < pivotValue) tmpLeft++;
+
+        // looking for element int right part
+        while(arr[tmpRight] > pivotValue) tmpRight--;
+
+        if(tmpLeft <= tmpRight)
+        {
+            int tmp = arr[tmpLeft];
+            arr[tmpLeft] = arr[tmpRight];
+            arr[tmpRight] = tmp;
+
+            // we must track pivotIndex
+            if(tmpLeft == pivotIndex)
+                pivotIndex = tmpRight;
+            else if(tmpRight == pivotIndex)
+                pivotIndex = tmpLeft;
+
+            tmpLeft++;
+            tmpRight--;
+        }
+
+    } while(tmpLeft <= tmpRight);
+
+    // swap if pivot not on the latest pos
+    if(pivotIndex != tmpLeft)
+    {
+        int tmp = arr[pivotIndex];
+        arr[pivotIndex] = arr[tmpLeft-1];
+        arr[tmpLeft-1] = tmp;
+        pivotIndex = tmpLeft - 1;
+    }
+
+    return pivotIndex;
+}
+
+int quickSelect(unsigned int* arr, int kOrder, int left, int right)
+{
+    int pivotPos = partition(arr, left, right);
+
+    if (pivotPos == kOrder)
+        return arr[pivotPos];
+    else if (pivotPos < kOrder)
+        return quickSelect(arr, kOrder, pivotPos + 1, right);
+    else
+        return quickSelect(arr, kOrder, left, pivotPos - 1);
+}
+
