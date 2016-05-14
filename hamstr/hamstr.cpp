@@ -14,6 +14,7 @@ int main(int ac, char** av)
 {
     const char* inputFileName = NULL;
     const char* outputFileName = NULL;
+    // clock_t tStart = clock();
 
     // read input arguments
     if(ac > 1)
@@ -54,16 +55,18 @@ int main(int ac, char** av)
     int first = 0;
     int last = hamsterCount;
 
-    do
+    while(dailyLimit != 0)
     {
         // calcualte max food usage for each hamster
         for (int j = 0; j < hamsterCount; ++j)
             maxHamsterUsage[j] = calculateMaxHamsterUsage(dailyRate[j], avarice[j], chosenHamsterCount - 1);
 
         unsigned int sumResult = 0;
+
+
         // sum hamsters which eat the least food
         for (int z = 0; z < chosenHamsterCount && sumResult <= dailyLimit; ++z)
-            sumResult += quickSelect(maxHamsterUsage, z, 0, hamsterCount);
+            sumResult += quickSelect(maxHamsterUsage, z, z, hamsterCount);
 
         if (sumResult <= dailyLimit)
         {
@@ -79,7 +82,7 @@ int main(int ac, char** av)
             last = chosenHamsterCount;
             chosenHamsterCount = round((first + last) / 2.0);
         }
-    } while (true);
+    }
 
     // save result to file
     FILE *outputFile = fopen(outputFileName, "w");
@@ -91,6 +94,7 @@ int main(int ac, char** av)
         outputFile = NULL;
     }
 
+    // printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     return 0;
 }
 
@@ -101,7 +105,7 @@ int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount)
 
 int getPivotIndex(int left, int right)
 {
-    return (left+right)/2;
+    return left;
 }
 
 int partition(unsigned int* arr, int left, int right)
@@ -111,7 +115,6 @@ int partition(unsigned int* arr, int left, int right)
     int tmpLeft = left;
     int tmpRight = right;
 
-
     do
     {
         // looking for element in left part
@@ -120,7 +123,7 @@ int partition(unsigned int* arr, int left, int right)
         // looking for element int right part
         while(arr[tmpRight] > pivotValue) tmpRight--;
 
-        if(tmpLeft <= tmpRight)
+        if(tmpLeft < tmpRight)
         {
             int tmp = arr[tmpLeft];
             arr[tmpLeft] = arr[tmpRight];
@@ -132,6 +135,11 @@ int partition(unsigned int* arr, int left, int right)
             else if(tmpRight == pivotIndex)
                 pivotIndex = tmpLeft;
 
+            tmpLeft++;
+            tmpRight--;
+        }
+        else if(tmpLeft == tmpRight)
+        {
             tmpLeft++;
             tmpRight--;
         }
