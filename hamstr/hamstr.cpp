@@ -4,19 +4,12 @@
 #include <ctime>
 
 int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount);
-
-// quick select
-int getPivotIndex(int left, int right);
-int partition(unsigned int* arr, int left, int right);
-int quickSelect(unsigned int* arr, int kOrder, int left, int right);
-
-void fisherYatesShuffle(unsigned int * arr, int N );
+void quickSort(unsigned int* arr, long size);
 
 int main(int ac, char** av)
 {
     const char* inputFileName = NULL;
     const char* outputFileName = NULL;
-    clock_t tStart = clock();
 
     // read input arguments
     if(ac > 1)
@@ -57,17 +50,18 @@ int main(int ac, char** av)
     int first = 0;
     int last = hamsterCount;
 
-    while(true)
+    do
     {
         // calcualte max food usage for each hamster
         for (int j = 0; j < hamsterCount; ++j)
             maxHamsterUsage[j] = calculateMaxHamsterUsage(dailyRate[j], avarice[j], chosenHamsterCount - 1);
 
-        fisherYatesShuffle(maxHamsterUsage, hamsterCount);
-
         unsigned int sumResult = 0;
+        quickSort(maxHamsterUsage, hamsterCount);
+
+        // sum hamsters which eat the least food
         for (int z = 0; z < chosenHamsterCount && sumResult <= dailyLimit; ++z)
-                sumResult += quickSelect(maxHamsterUsage, z, z, hamsterCount - 1);
+            sumResult += maxHamsterUsage[z];
 
         if (sumResult <= dailyLimit)
         {
@@ -83,20 +77,18 @@ int main(int ac, char** av)
             last = chosenHamsterCount;
             chosenHamsterCount = round((first + last) / 2.0);
         }
-    }
+    } while (true);
 
-    printf("%d \n", maxCount);
     // save result to file
     FILE *outputFile = fopen(outputFileName, "w");
     if(outputFile)
     {
         fprintf (outputFile, "%d", maxCount);
-
+        
         fclose(outputFile);
         outputFile = NULL;
     }
 
-    printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     return 0;
 }
 
@@ -105,80 +97,25 @@ int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount)
     return dailyRate + hamsterCount * avarice;
 }
 
-int getPivotIndex(int left, int right)
+void quickSort(unsigned int* arr, long size)
 {
-    return left + (right - left) / 2.0;
-}
+  long i = 0, j = size-1;
+  int temp, pivot;
 
-int partition(unsigned int* arr, int left, int right)
-{
-    int pivotIndex = getPivotIndex(left, right);
-    int pivotValue = arr[pivotIndex];
-    int tmpLeft = left;
-    int tmpRight = right;
+  pivot = arr[ size>>1 ];
 
-    do
-    {
-        // looking for element in left part
-        while(tmpLeft <= right && arr[tmpLeft] < pivotValue) tmpLeft++;
+  do {
+    while ( arr[i] < pivot ) i++;
+    while ( arr[j] > pivot ) j--;
 
-        // looking for element int right part
-        while(tmpRight > 0 && arr[tmpRight] > pivotValue) tmpRight--;
-
-        if(tmpLeft <= tmpRight)
-        {
-            int tmp = arr[tmpLeft];
-            arr[tmpLeft] = arr[tmpRight];
-            arr[tmpRight] = tmp;
-
-            // we must track pivotIndex
-            if(tmpLeft == pivotIndex)
-                pivotIndex = tmpRight;
-            else if(tmpRight == pivotIndex)
-                pivotIndex = tmpLeft;
-
-            tmpLeft++;
-            tmpRight--;
-        }
-
-    } while(tmpLeft <= tmpRight);
-
-    // swap if pivot not on the latest pos
-    if(pivotIndex != tmpLeft)
-    {
-        int tmp = arr[pivotIndex];
-        arr[pivotIndex] = arr[tmpLeft-1];
-        arr[tmpLeft-1] = tmp;
-        pivotIndex = tmpLeft - 1;
+    if (i <= j) {
+      temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+      i++; j--;
     }
+  } while ( i<=j );
 
-    return pivotIndex;
+  if ( j > 0 ) quickSort(arr, j);
+  if ( size > i ) quickSort(arr+i, size-i);
 }
-
-int quickSelect(unsigned int* arr, int kOrder, int left, int right)
-{
-
-    int pivotPos = partition(arr, left, right);
-
-    if (pivotPos == kOrder)
-        return arr[pivotPos];
-
-    else if (pivotPos < kOrder)
-        return quickSelect(arr, kOrder, pivotPos + 1, right);
-    else
-        return quickSelect(arr, kOrder, left, pivotPos - 1);
-}
-
-void fisherYatesShuffle(unsigned int * arr, int N )
-{
- int j, tmp;
- for(int i = N-1; i >= 0; i--)
- {
-  j = rand() % (i + 1);
-
-  tmp = arr[j];
-  arr[j] = arr[i];
-  arr[i] = tmp;
- }
-}
-
