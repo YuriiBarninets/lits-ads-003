@@ -57,7 +57,7 @@ int main(int ac, char** av)
     int first = 0;
     int last = hamsterCount;
 
-    while(true)
+    while(true && dailyLimit)
     {
         // calcualte max food usage for each hamster
         for (int j = 0; j < hamsterCount; ++j)
