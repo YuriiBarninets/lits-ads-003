@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <cstdlib>
 #include <math.h>
 #include <ctime>
@@ -7,10 +8,10 @@ int calculateMaxHamsterUsage(int dailyRate, int avarice, int hamsterCount);
 
 // quick select
 int getPivotIndex(int left, int right);
-int partition(unsigned __int64* arr, int left, int right);
-int quickSelect(unsigned __int64* arr, int kOrder, int left, int right);
+int partition(unsigned long long* arr, int left, int right);
+int quickSelect(unsigned long long* arr, int kOrder, int left, int right);
 
-void fisherYatesShuffle(unsigned __int64* arr, int N );
+void fisherYatesShuffle(unsigned long long* arr, int N );
 
 int main(int ac, char** av)
 {
@@ -35,7 +36,7 @@ int main(int ac, char** av)
     unsigned int dailyLimit, hamsterCount = 0;
     unsigned int *dailyRate = NULL;
     unsigned int *avarice = NULL;
-    unsigned __int64* maxHamsterUsage = NULL;
+    unsigned long long* maxHamsterUsage = NULL;
 
     if (inputFile)
     {
@@ -44,7 +45,7 @@ int main(int ac, char** av)
 
         dailyRate = (unsigned int*) malloc(sizeof(int) * hamsterCount);
         avarice = (unsigned int*) malloc(sizeof(int) * hamsterCount);
-        maxHamsterUsage = (unsigned __int64*) malloc(sizeof(__int64) * hamsterCount);
+        maxHamsterUsage = (unsigned long long*) malloc(sizeof(int64_t) * hamsterCount);
     }
 
     // read food usage and avarice values
@@ -64,7 +65,7 @@ int main(int ac, char** av)
 
         fisherYatesShuffle(maxHamsterUsage, hamsterCount);
 
-        unsigned __int64 sumResult = 0;
+        unsigned long long sumResult = 0;
         quickSelect(maxHamsterUsage, chosenHamsterCount - 1, 0, hamsterCount - 1);
         for (int i = 0; i < chosenHamsterCount && sumResult < dailyLimit; ++i)
             sumResult += maxHamsterUsage[i];
@@ -86,7 +87,6 @@ int main(int ac, char** av)
         }
     }
 
-    printf("%d \n", maxCount);
     // save result to file
     FILE *outputFile = fopen(outputFileName, "w");
     if(outputFile)
@@ -110,7 +110,7 @@ int getPivotIndex(int left, int right)
     return left + (right - left) / 2.0;
 }
 
-int partition(unsigned __int64* arr, int left, int right)
+int partition(unsigned long long* arr, int left, int right)
 {
     int pivotIndex = getPivotIndex(left, right);
     int pivotValue = arr[pivotIndex];
@@ -155,7 +155,7 @@ int partition(unsigned __int64* arr, int left, int right)
     return pivotIndex;
 }
 
-int quickSelect(unsigned __int64* arr, int kOrder, int left, int right)
+int quickSelect(unsigned long long* arr, int kOrder, int left, int right)
 {
 
     int pivotPos = partition(arr, left, right);
@@ -169,7 +169,7 @@ int quickSelect(unsigned __int64* arr, int kOrder, int left, int right)
         return quickSelect(arr, kOrder, left, pivotPos - 1);
 }
 
-void fisherYatesShuffle(unsigned __int64* arr, int N )
+void fisherYatesShuffle(unsigned long long* arr, int N )
 {
  int j, tmp;
  for(int i = N-1; i >= 0; i--)
