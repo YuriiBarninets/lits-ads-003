@@ -57,7 +57,7 @@ int main(int ac, char** av)
     int first = 0;
     int last = hamsterCount;
 
-    while(true && dailyLimit)
+    while(true)
     {
         // calcualte max food usage for each hamster
         for (int j = 0; j < hamsterCount; ++j)
@@ -67,7 +67,7 @@ int main(int ac, char** av)
 
         unsigned long long sumResult = 0;
         quickSelect(maxHamsterUsage, chosenHamsterCount - 1, 0, hamsterCount - 1);
-        for (int i = 0; i < chosenHamsterCount && sumResult < dailyLimit; ++i)
+        for (int i = 0; i < chosenHamsterCount && sumResult <= dailyLimit; ++i)
             sumResult += maxHamsterUsage[i];
 
         if (sumResult <= dailyLimit)
