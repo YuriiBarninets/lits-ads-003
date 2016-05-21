@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include <vector>
 
 using namespace std;
@@ -67,14 +68,18 @@ bool readCardSequence(const string& inputFilePath, CardsOnHands& cardsInfo)
         getline(inputFile, cardSequenceStr);
         
         istringstream iss(cardSequenceStr);
-        int card;
+        unsigned int card;
 
         while (iss >> card)
         {
             if (card == 0)
                 cardsInfo.mJokerCounts++;
             else
-                cardsInfo.mCardSequence.push_back(card);
+            {
+                auto it = find(cardsInfo.mCardSequence.begin(), cardsInfo.mCardSequence.end(), card);
+                if(it == cardsInfo.mCardSequence.end())
+                    cardsInfo.mCardSequence.push_back(card);
+            }
         }
 
         inputFile.close();
@@ -145,7 +150,7 @@ int partition(std::vector<unsigned int>& data, int left, int right)
             tmpLeft++;
             tmpRight--;
         }
-    } while (tmpLeft < tmpRight);
+    } while (tmpLeft <= tmpRight);
 
     // swap pivot with first element in right part
     std::swap(data[pivotPos], data[tmpRight]);
