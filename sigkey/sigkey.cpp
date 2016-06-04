@@ -1,10 +1,6 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <algorithm>
 #include <map>
-#include <chrono>
 
 using namespace std;
 bool readInputData(const string& inputFilePath, int& keysCount, map<unsigned int, short>& keys);
@@ -12,8 +8,6 @@ unsigned int calcPrivateKey(const unsigned int key, short key_length);
 
 int main(int argc, char** argv)
 {
-    auto start = chrono::high_resolution_clock::now();
-
     string inputFilePath = "sigkey.in";
     string outputFilePath = "sigkey.out";
 
@@ -62,9 +56,9 @@ int main(int argc, char** argv)
         outputFile = NULL;
     }
 
-    auto end = chrono::high_resolution_clock::now();
+    /*auto end = chrono::high_resolution_clock::now();
     auto diff = end - start;
-    cout << chrono::duration <double, milli> (diff).count() << " ms" << endl;
+    cout << chrono::duration <double, milli> (diff).count() << " ms" << endl;*/
 
     return 1;
 }
@@ -104,10 +98,7 @@ bool readInputData(const string& inputFilePath, int& keysCount, map<unsigned int
         return true;
     }
     else
-    {
-        cout << "Can't open file" << endl;
         return false;
-    }
 }
 
 unsigned int calcPrivateKey(const unsigned int key, short key_length)
