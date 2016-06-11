@@ -51,15 +51,9 @@ int main(int argc, char** argv)
             left = mid;
     }
 
-    // TODO : reimplement on C++ style
-    FILE *outputFile = fopen(outputFilePath.c_str(), "w");
-    if(outputFile)
-    {
-        fprintf (outputFile, "%d", minSquare);
-
-        fclose(outputFile);
-        outputFile = NULL;
-    }
+    std::ofstream outputFile(outputFilePath, std::ifstream::out);
+    outputFile << minSquare;
+    outputFile.close();
 
     return 1;
 }
