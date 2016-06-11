@@ -10,8 +10,6 @@ bool canConsist(uint64_t sequereSide, uint64_t n, uint64_t w, uint64_t h);
 
 int main(int argc, char** argv)
 {
-    auto start = chrono::high_resolution_clock::now();
-
     string inputFilePath = "bugtrk.in";
     string outputFilePath = "bugtrk.out";
 
@@ -36,7 +34,6 @@ int main(int argc, char** argv)
         cout << "Can't open file" << endl;
         return false;
     }
-
 
     // perform binary search of min square
     uint64_t left = 1;
