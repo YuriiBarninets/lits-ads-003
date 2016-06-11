@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     // perform binary search of min square
     uint64_t left = 1;
     uint64_t right = N * std::max(W, H);
-    uint64_t mid, minSquare = 0;
+    uint64_t mid, minSquare = right;
     
     while (right - left > 1)
     {
@@ -46,11 +46,12 @@ int main(int argc, char** argv)
         bool res = canConsist(mid, N, W, H);
 
         if (res)
-            right = minSquare = mid;
+            right = mid;
         else
             left = mid;
     }
 
+    minSquare = right;
     std::ofstream outputFile(outputFilePath, std::ifstream::out);
     outputFile << minSquare;
     outputFile.close();
