@@ -7,8 +7,8 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    string inputFilePath = "bugtrk.in";
-    string outputFilePath = "bugtrk.out";
+    string inputFilePath = "gamsrv.in";
+    string outputFilePath = "gamsrv.out";
 
     if (argc > 1)
     {
@@ -28,6 +28,9 @@ int main(int argc, char** argv)
         cout << "Can't open file : " << inputFilePath << endl;
         return -1;
     }
+
+
+    // TODO : implement solution
 
     // write data to file
     ofstream outputFile(outputFilePath, ifstream::out);

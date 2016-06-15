@@ -58,8 +58,6 @@ void dfs(VertexPtr startVertex)
         }
 
     }
-
-
 }
 
 int main(int argc, char** argv)
