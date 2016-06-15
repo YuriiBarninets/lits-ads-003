@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stack>
 #include <set>
+#include <map>
 
 #include "types.h"
 #include "graph.h"
@@ -16,49 +17,10 @@ using namespace std;
 GraphPtr readDocumentsFromFile(const string& inputFilePath);
 VertexPtr getVertex(list<VertexPtr> vertices, const string& label);
 
-list<VertexPtr> unvisitedVertices;
-set<VertexPtr> visitedVertices;
+map<string, VertexPtr> unvisitedVertices;
 list<string> docOrder;
 
-void dfs(VertexPtr startVertex)
-{
-    list<VertexPtr> verticesStack;
-    verticesStack.push_back(startVertex); // push initial vertex in stack
-
-    while (!verticesStack.empty()) // get vertex for analysis
-    {
-        VertexPtr vertex = verticesStack.back();
-        verticesStack.pop_back();
-
-        if (visitedVertices.find(vertex) == visitedVertices.end())
-        {
-            // hard code
-            unvisitedVertices.remove(vertex);
-            visitedVertices.insert(vertex);
-        }
-
-        list<VertexPtr> unvisitedNeighbors;
-        list<EdgePtr>& outBoundEdges = vertex->getOutboundEdges();
-        for (EdgePtr edge : outBoundEdges)
-        {
-            // iterate over all neighborhoods and add to stack if vertex not visited
-            VertexPtr vertex = edge->getEndVertex();
-            if(visitedVertices.find(vertex) == visitedVertices.end())
-                unvisitedNeighbors.push_back(vertex);
-        }
-
-        if (unvisitedNeighbors.empty())
-        {
-            docOrder.push_back(vertex->getLabel());
-        }
-        else
-        {
-            verticesStack.push_back(vertex);
-            verticesStack.insert(verticesStack.end(), unvisitedNeighbors.begin(), unvisitedNeighbors.end());
-        }
-
-    }
-}
+void dfs(VertexPtr startVertex);
 
 int main(int argc, char** argv)
 {
@@ -75,11 +37,11 @@ int main(int argc, char** argv)
     GraphPtr graph = readDocumentsFromFile(inputFilePath);
 
     // we know that our graph is acycle, so do DFS sorting
-    list<VertexPtr>& vertices = graph->getVertices();
+    map<string, VertexPtr>& vertices = graph->getVertices();
     unvisitedVertices = vertices;
 
     while (unvisitedVertices.size() > 0)
-        dfs(*unvisitedVertices.begin());
+        dfs(unvisitedVertices.begin()->second);
 
     // write data to file
     ofstream outputFile(outputFilePath, ifstream::out);
@@ -104,7 +66,7 @@ GraphPtr readDocumentsFromFile(const string& inputFilePath)
     ifstream inputFile(inputFilePath);
     if (inputFile.is_open())
     {
-        list<VertexPtr> vertices;
+        map<string, VertexPtr> vertices;
         list<EdgePtr> edges;
 
         while (!inputFile.eof())
@@ -114,19 +76,23 @@ GraphPtr readDocumentsFromFile(const string& inputFilePath)
             if (startVertexLabel.empty() || endVertexLabel.empty()) continue;
 
             //
-            VertexPtr startVertex = getVertex(vertices, startVertexLabel);
-            if (startVertex == nullptr)
+            VertexPtr startVertex;
+            if (vertices.find(startVertexLabel) == vertices.end())
             {
                 startVertex = make_shared<Vertex>(startVertexLabel);
-                vertices.push_back(startVertex);
+                vertices[startVertexLabel] = startVertex;
             }
+            else
+                startVertex = vertices[startVertexLabel];
 
-            VertexPtr endVertex = getVertex(vertices, endVertexLabel);
-            if (endVertex == nullptr)
+            VertexPtr endVertex;
+            if (vertices.find(endVertexLabel) == vertices.end())
             {
                 endVertex = make_shared<Vertex>(endVertexLabel);
-                vertices.push_back(endVertex);
+                vertices[endVertexLabel] = endVertex;
             }
+            else
+                endVertex = vertices[endVertexLabel];
 
             EdgePtr edge = make_shared<Edge>(startVertex, endVertex);
             startVertex->getOutboundEdges().push_back(edge);
@@ -143,13 +109,38 @@ GraphPtr readDocumentsFromFile(const string& inputFilePath)
     return nullptr;
 }
 
-VertexPtr getVertex(list<VertexPtr> vertices, const string& label)
+void dfs(VertexPtr startVertex)
 {
-    for (VertexPtr vertex : vertices)
-    {
-        if (vertex->getLabel() == label)
-            return vertex;
-    }
+    list<VertexPtr> verticesStack;
+    verticesStack.push_back(startVertex); // push initial vertex in stack
 
-    return nullptr;
+    while (!verticesStack.empty()) // get vertex for analysis
+    {
+        VertexPtr vertex = verticesStack.back();
+        verticesStack.pop_back();
+
+        if (unvisitedVertices.find(vertex->getLabel()) != unvisitedVertices.end())
+            unvisitedVertices.erase(vertex->getLabel());
+
+        list<VertexPtr> unvisitedNeighbors;
+        list<EdgePtr>& outBoundEdges = vertex->getOutboundEdges();
+        for (EdgePtr edge : outBoundEdges)
+        {
+            // iterate over all neighborhoods and add to stack if vertex not visited
+            VertexPtr vertex = edge->getEndVertex();
+            if(unvisitedVertices.find(vertex->getLabel()) != unvisitedVertices.end())
+                unvisitedNeighbors.push_back(vertex);
+        }
+
+        if (unvisitedNeighbors.empty())
+        {
+            docOrder.push_back(vertex->getLabel());
+        }
+        else
+        {
+            verticesStack.push_back(vertex);
+            verticesStack.insert(verticesStack.end(), unvisitedNeighbors.begin(), unvisitedNeighbors.end());
+        }
+
+    }
 }
