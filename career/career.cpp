@@ -74,13 +74,12 @@ unsigned int findMaxExperience(shared_ptr<Graph> comapnyStruct);
 void writeResultToDisk(const string& outputFilePath, unsigned int maxExperience);
 
 unsigned int dijkstra(shared_ptr<Graph> graph, shared_ptr<Vertex> startVertex, shared_ptr<Vertex> endVertex);
-#include <time.h>
+
 int main(int argc, char** argv)
 {
     string inputFilePath = (argc > 1) ? argv[1] : "ijones.in";
     string outputFilePath = (argc > 2) ? argv[2] : "ijones.out";
 
-    cout << inputFilePath.c_str();
     shared_ptr<Graph> companyStruct = readCompanyStruct(inputFilePath);
 
     if (companyStruct)
@@ -88,6 +87,7 @@ int main(int argc, char** argv)
         unsigned int  maxExperience = findMaxExperience(companyStruct);
         writeResultToDisk(outputFilePath, maxExperience);
     }
+    else
     {
         cout << "Can't read company struct from file" << endl;
     }
