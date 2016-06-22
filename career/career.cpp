@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <string.h>
 
 using namespace std;
 
@@ -240,7 +241,7 @@ unsigned int dijkstra(shared_ptr<Graph> graph, shared_ptr<Vertex> startVertex, s
         for (shared_ptr<Edge> edge : outBoundEdges)
         {
             int endVertexIndex = edge->getEndVertex()->getIndex();
-            int newDistance = distances[vertexWithLongestDistance] + vertices[endVertexIndex]->getWeight();
+            unsigned int newDistance = distances[vertexWithLongestDistance] + vertices[endVertexIndex]->getWeight();
 
             if (newDistance > distances[endVertexIndex])
                 distances[endVertexIndex] = newDistance;
