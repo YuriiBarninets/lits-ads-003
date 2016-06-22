@@ -78,8 +78,8 @@ unsigned int dijkstra(shared_ptr<Graph> graph, shared_ptr<Vertex> startVertex, s
 
 int main(int argc, char** argv)
 {
-    string inputFilePath = (argc > 1) ? argv[1] : "ijones.in";
-    string outputFilePath = (argc > 2) ? argv[2] : "ijones.out";
+    string inputFilePath = (argc > 1) ? argv[1] : "career.in";
+    string outputFilePath = (argc > 2) ? argv[2] : "career.out";
 
     shared_ptr<Graph> companyStruct = readCompanyStruct(inputFilePath);
 
